@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <title>View Cats</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+       
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1>Cats</h1>
+        <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
+        <div>
+            <table class="table" id="catTable">
+                <tr>
+                        <th>id</th>
+                        <th>Name</th>
+                        <th>Sex</th>
+                        <th>Age</th>
+                        <th>Breed</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                </tr>
+                
+            </table>
+        </div>
+        <div id='createUpdateForm' style="display: none">
+                <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> cat</h2>
+                <input type="hidden" name="id"/>
+                name <input type="text" name="name" /><br/>
+                sex <input type="text" name="sex"/> <br/>
+                age <input type="number" name="age"/> <br/>
+                breed <input type="text" name="breed"/> <br/>
+                <span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
+                <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
+        </div>
+    </body>
+    <script>
+    function showCreate(){
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('catTable').style.display="none"
+        document.getElementById('createUpdateForm').style.display="block"
+
+        document.getElementById('createLabel').style.display="inline"
+        document.getElementById('updateLabel').style.display="none"
+
+        document.getElementById('doCreateButton').style.display="block"
+        document.getElementById('doUpdateButton').style.display="none"
+
+    }
+    function showViewAll(){
+        document.getElementById('showCreateButton').style.display="block"
+        document.getElementById('catTable').style.display="block"
+        document.getElementById('createUpdateForm').style.display="none"
+    }
+    function showUpdate(buttonElement){
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('catTable').style.display="none"
+        document.getElementById('createUpdateForm').style.display="block"
+
+        document.getElementById('createLabel').style.display="none"
+        document.getElementById('updateLabel').style.display="inline"
+
+        document.getElementById('doCreateButton').style.display="none"
+        document.getElementById('doUpdateButton').style.display="block"
+
+
+        var rowElement = buttonElement.parentNode.parentNode
+        
+        
+        var cat = getcatFromRow(rowElement)
+        populateFormWithcat(cat)
+    }
+    function doCreate(){
+        var form = document.getElementById('createUpdateForm')
+
+        var cat = {}
+       
+        cat.name = form.querySelector('input[name="name"]').value
+        cat.sex = form.querySelector('input[name="sex"]').value
+        cat.age = form.querySelector('input[name="age"]').value
+        cat.breed = form.querySelector('input[name="breed"]').value
+        console.log(JSON.stringify(cat))
+        createcatAjax(cat)
+        
+        
+    }
+    function doUpdate(){
+        var cat = getcatFromForm();
+        var rowElement = document.getElementById(cat.id);
+        updatecatAjax(cat);
+        setcatInRow(rowElement,cat);
+       
+        clearForm();
+        showViewAll();
+    }
+    function doDelete(r){
+        var tableElement = document.getElementById('catTable');
+        var rowElement = r.parentNode.parentNode;
+        var index = rowElement.rowIndex;
+        deletecatAjax(rowElement.getAttribute("id"));
+        tableElement.deleteRow(index);
+    }
+    function addcatToTable(cat){
+        var tableElement = document.getElementById('catTable')
+        var rowElement = tableElement.insertRow(-1)
+        rowElement.setAttribute('id',cat.id)
+        var cell1 = rowElement.insertCell(0);
+        cell1.innerHTML = cat.id
+        var cell2 = rowElement.insertCell(1);
+        cell2.innerHTML = cat.name
+        var cell3 = rowElement.insertCell(2);
+        cell3.innerHTML = cat.sex
+        var cell4 = rowElement.insertCell(3);
+        cell4.innerHTML = cat.age
+        var cell5 = rowElement.insertCell(4);
+        cell3.innerHTML = cat.breed
+        var cell6 = rowElement.insertCell(5);
+        cell5.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+        var cell7 = rowElement.insertCell(6);
+        cell6.innerHTML = '<button onclick=doDelete(this)>delete</button>'
+
+    }
+
+    function clearForm(){
+        var form = document.getElementById('createUpdateForm')
+
+        form.querySelector('input[name="name"]').value=''
+        form.querySelector('input[name="sex"]').value=''
+        form.querySelector('input[name="age"]').value=''
+        form.querySelector('input[name="breed"]').value=''
+    }
+    function getcatFromRow(rowElement){
+        var car ={}
+        cat.id  = rowElement.getAttribute('id')
+        cat.name = rowElement.cells[1].firstChild.textContent
+        cat.sex = rowElement.cells[2].firstChild.textContent
+        cat.age = parseInt(rowElement.cells[3].firstChild.textContent,10)
+        cat.breed = rowElement.cells[4].firstChild.textContent
+        return cat
+    }
+    function setcatInRow(rowElement, cat){
+        rowElement.cells[0].firstChild.textContent= cat.id  
+        rowElement.cells[1].firstChild.textContent= cat.name 
+        rowElement.cells[2].firstChild.textContent= cat.sex
+        rowElement.cells[3].firstChild.textContent= cat.age
+        rowElement.cells[4].firstChild.textContent= cat.breed
+    }
+    function populateFormWithcat(cat){
+        var form = document.getElementById('createUpdateForm')
+        form.querySelector('input[name="id"]').disabled = true
+
+        form.querySelector('input[name="id"]').value  = cat.id
+        form.querySelector('input[name="name"]').value= cat.name
+        form.querySelector('input[name="sex"]').value= cat.sex
+        form.querySelector('input[name="age"]').value= cat.age
+        form.querySelector('input[name="breed"]').value= cat.breed
+        return cat
+    }
+    function getcatFromForm(){
+        var form = document.getElementById('createUpdateForm')
+        var cat = {}
+        cat.id = form.querySelector('input[name="id"]').value
+        cat.name = form.querySelector('input[name="name"]').value
+        cat.sex = form.querySelector('input[name="sex"]').value
+        cat.age = parseInt(form.querySelector('input[name="age"]').value,10)
+        cat.breed = form.querySelector('input[name="breed"]').value
+        console.log(JSON.stringify(cat))
+        return cat
+    }
+    function getAllAjax(){
+        $.ajax({
+            "url": "http://127.0.0.1:5000/cats",
+            "method":"GET",
+            "data":"",
+            "dataType": "JSON",
+            "success":function(result){
+                //console.log(result);
+                for (cat of result){
+                    addcatToTable(cat);
+                }
+                
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+
+    }
+    function createcatAjax(cat){
+        //var car = {"reg":"12 D 1234","make":"Fiat","model":"Punto","age":3000}
+        console.log(JSON.stringify(cat));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/cats",
+            "method":"POST",
+            "data":JSON.stringify(cat),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                cat.id = result.id
+                addcatToTable(cat)
+                clearForm()
+                showViewAll()
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function updatecatAjax(cat){
+        //var car = {"reg":"12 D 1234","age":8000}
+        console.log(JSON.stringify(cat));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/cats/"+encodeURI(cat.id),
+            "method":"PUT",
+            "data":JSON.stringify(cat),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+               // console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function deletecatAjax(id){
+        
+        //console.log(JSON.stringify('deleting '+id));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/cats/"+encodeURI(id),
+            "method":"DELETE",
+            "data":"",
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    getAllAjax();
+  
+
+    
+    </script>
+</html>
