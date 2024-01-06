@@ -2,11 +2,11 @@ import mysql.connector
 import dbconfig as cfg
 class catDAO:
     connection=""
-    cursor =''
-    host=       ''
-    user=       ''
-    password=   ''
-    database=   ''
+    cursor =""
+    host=""
+    user=""
+    password=""
+    database=""
     
     def __init__(self):
         self.host=       cfg.mysql['host']

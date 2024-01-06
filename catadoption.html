@@ -112,11 +112,11 @@
         var cell4 = rowElement.insertCell(3);
         cell4.innerHTML = cat.age
         var cell5 = rowElement.insertCell(4);
-        cell3.innerHTML = cat.breed
+        cell5.innerHTML = cat.breed
         var cell6 = rowElement.insertCell(5);
-        cell5.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+        cell6.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
         var cell7 = rowElement.insertCell(6);
-        cell6.innerHTML = '<button onclick=doDelete(this)>delete</button>'
+        cell7.innerHTML = '<button onclick=doDelete(this)>Delete</button>'
 
     }
 
@@ -173,7 +173,7 @@
             "data":"",
             "dataType": "JSON",
             "success":function(result){
-                //console.log(result);
+                
                 for (cat of result){
                     addcatToTable(cat);
                 }
@@ -186,7 +186,7 @@
 
     }
     function createcatAjax(cat){
-        //var car = {"reg":"12 D 1234","make":"Fiat","model":"Punto","age":3000}
+        
         console.log(JSON.stringify(cat));
         $.ajax({
             "url": "http://127.0.0.1:5000/cats",
@@ -195,7 +195,7 @@
             "dataType": "JSON",
             contentType: "application/json; charset=utf-8",
             "success":function(result){
-                //console.log(result);
+                
                 cat.id = result.id
                 addcatToTable(cat)
                 clearForm()
@@ -207,7 +207,7 @@
         });
     }
     function updatecatAjax(cat){
-        //var car = {"reg":"12 D 1234","age":8000}
+        
         console.log(JSON.stringify(cat));
         $.ajax({
             "url": "http://127.0.0.1:5000/cats/"+encodeURI(cat.id),
@@ -216,7 +216,7 @@
             "dataType": "JSON",
             contentType: "application/json; charset=utf-8",
             "success":function(result){
-               // console.log(result);
+               
                   
             },
             "error":function(xhr,status,error){
@@ -226,7 +226,7 @@
     }
     function deletecatAjax(id){
         
-        //console.log(JSON.stringify('deleting '+id));
+        
         $.ajax({
             "url": "http://127.0.0.1:5000/cats/"+encodeURI(id),
             "method":"DELETE",
@@ -234,7 +234,7 @@
             "dataType": "JSON",
             contentType: "application/json; charset=utf-8",
             "success":function(result){
-                //console.log(result);
+                
                   
             },
             "error":function(xhr,status,error){
